@@ -9,7 +9,7 @@
   "author": "jsonbankio",
   "repository": "https://github.com/jsonbankio/jsonbank-env",
   "scripts": {
-    "prepublishOnly": "npm run test && npm run build",
+    "prepublishOnly": "npm run build",
     "build": "npx tsc",
     "watch": "npx tsc --watch",
     "test": "node index.js",
