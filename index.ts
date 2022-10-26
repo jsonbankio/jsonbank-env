@@ -12,41 +12,66 @@ const subCommand: "force" | string | undefined = process.argv[3] as any;
 const cwd = process.cwd();
 // get config file path
 const configPath = path.join(cwd, "jsonbank.env.json");
+console.log(); // new line
+
+// simple logger
+function logThis(message: string, exit?: number) {
+  console.log(message);
+  if (exit !== undefined) {
+    console.log(); // new line
+    process.exit(exit);
+  }
+}
 
 // if init command is passed
 // make config file in current working directory
 if (command === "init") {
+  // check if force is the last argument
+  const force =
+    subCommand === "force" || process.argv[process.argv.length - 1] === "force";
+
   // if config file already exists
   // then exit
-  if (fs.existsSync(configPath) && subCommand !== "force") {
-    if (subCommand !== "force") {
-      console.log("Config file already exists. Use 'force' to overwrite.");
-      process.exit(0);
+  if (fs.existsSync(configPath)) {
+    if (!force) {
+      logThis("Config file already exists. Use 'force' to overwrite.", 1);
     }
 
     // delete old config file
     fs.unlinkSync(configPath);
   }
 
-  // create config file from factory
-  const factoryFile = path.join(__dirname, "factory/jsonbank.env.json");
+  // factory file path
+  let factoryFile = path.join(__dirname, "factory/jsonbank.env.json");
+
+  // subCommand is not "force"
+  // then subCommand is the local path to factory file
+  if (subCommand && subCommand !== "force") {
+    factoryFile = path.join(cwd, subCommand);
+
+    // check if factory file exists
+    if (!fs.existsSync(factoryFile)) {
+      logThis(`Factory file {${factoryFile}} does not exist.`, 1);
+    }
+
+    // log factory file path
+    console.log("Factory File: ", factoryFile);
+  }
 
   // copy factory file to config file
   fs.copyFileSync(factoryFile, configPath);
 
   // log success
-  console.log("Config file created successfully.");
-
-  process.exit(0);
+  logThis("Config file created successfully.", 0);
 }
 
 // if is not init command
 // then check if config file exists
 if (!fs.existsSync(configPath)) {
-  console.log(
-    "Config file {jsonbank.env.json} not found. Use 'init' to create."
+  logThis(
+    "Config file {jsonbank.env.json} not found. Use 'init' to create.",
+    1
   );
-  process.exit(1);
 }
 
 // read config file
@@ -58,8 +83,7 @@ const config: {
 // validate config file
 // that public_key is defined
 if (!config.public_key) {
-  console.log("Config file is not valid. {public_key} is not defined.");
-  process.exit(1);
+  logThis("Config file is not valid. {public_key} is not defined.", 1);
 }
 
 if (!config.envs) config.envs = {};
@@ -75,11 +99,10 @@ async function Main() {
   // and subCommand = local path
   if (hasCommand) {
     if (!subCommand) {
-      console.log("Local path must be provided");
-      process.exit(1);
+      logThis("Local path must be provided", 1);
     }
 
-    await ProcessEnvs(command, subCommand);
+    await ProcessEnvs(command, subCommand!);
     process.exit(0);
   }
 
@@ -90,6 +113,7 @@ async function Main() {
     await ProcessEnvs(remotePath, localPath, command === "force");
   }
 
+  console.log(); // new line
   process.exit(0);
 }
 
@@ -105,13 +129,6 @@ Main().catch((error) => {
   console.log(error);
   process.exit(1);
 });
-
-// /**
-//  * Gets json content from remote file
-//  */
-// function getJsonContent(file: string) {
-//   return jsb.getOwnContent(file);
-// }
 
 async function ProcessEnvs(
   remoteFile: string,
@@ -130,10 +147,10 @@ async function ProcessEnvs(
     force = force || process.argv[4] === "force";
 
     if (!force) {
-      console.log(
-        `Local file {${localFile}} already exists. Use 'force' to overwrite.`
+      logThis(
+        `Local file {${localFile}} already exists. Use 'force' to overwrite.`,
+        1
       );
-      process.exit(0);
     }
 
     // delete old local file
@@ -165,9 +182,25 @@ async function ProcessEnvs(
 function jsonToEnv(data: Record<string, any>) {
   let env = "";
   for (const key in data) {
+    const value = data[key];
+    const type = typeof value;
+
     // wrap all string values with double quotes
-    const value = typeof data[key] === "string" ? `"${data[key]}"` : data[key];
-    env += `${key}=${value}${os.EOL}`;
+    if (type === "string") {
+      env += `${key}="${value}"${os.EOL}`;
+    }
+    // else if undefined or null then set value to empty string
+    else if (value === undefined || value === null) {
+      env += `${key}=${os.EOL}`;
+    }
+    // set value as it is except for type object
+    else {
+      // if object then skip
+      if (type === "object") continue;
+
+      // else set value as it is
+      env += `${key}=${value}${os.EOL}`;
+    }
   }
 
   return env;
