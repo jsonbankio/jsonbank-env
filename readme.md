@@ -1,5 +1,8 @@
 # JsonBank Env
 
+[Npm](https://www.npmjs.com/package/jsonbank-env) | [Github](https://https://github.com/jsonbankio/jsonbank-env.git)
+
+## What is it?
 A command line tool to Get your env files from the cloud as json.
 
 **Save** as a `JSON` file remotely and **Load** it to your project as `ENV`.
@@ -87,7 +90,7 @@ Using the example config file below:
 {
   "public_key": "public_key",
   "envs": {
-    ".env": "envs/default",
+    ".env": "envs/default.json",
     ".prod.env": "envs/prod.json"
   }
 }
