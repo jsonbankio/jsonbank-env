@@ -24,7 +24,7 @@ npx jsonbank-env <args>
 
 ## Configuration
 
-A `jsonbank.env.json` Configuration file is required. This is where the public key will be defined.
+A `jsonbank.env.json` Configuration file is required. This is where the [public key](https://jsonbank.io/settings/api) will be defined.
 
 ### Create config file.
 
@@ -53,7 +53,7 @@ The following file will be created.
 }
 ```
 
-Insert your public key in the `public_key` field.
+Insert your [public key](https://jsonbank.io/settings/api) in the `public_key` field.
 
 ### envs
 
