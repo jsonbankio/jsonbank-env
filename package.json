@@ -1,0 +1,29 @@
+{
+  "name": "jsonbank-env",
+  "bin": {
+    "jsonbank-env": "./index.js"
+  },
+  "version": "0.0.1",
+  "description": "Covert Json from cloud  to .env files",
+  "main": "index.js",
+  "author": "jsonbankio",
+  "repository": "https://github.com/jsonbankio/jsonbank-env",
+  "scripts": {
+    "prepublishOnly": "npm run test && npm run build",
+    "build": "npx tsc",
+    "watch": "npx tsc --watch",
+    "test": "node index.js",
+    "test-dev": "nodemon index.js -- '.env' '.env' force"
+  },
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@types/node": "^18.11.6",
+    "jsonbank": "^1.3.0"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules
+.idea
+.vscode
+*.env
+jsonbank.env.json
+!factory/jsonbank.env.json
+
+*.js
+*.d.ts
