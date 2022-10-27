@@ -14,7 +14,7 @@ A command line tool to Get your env files from the cloud as json.
   - [Create config file](#create-config-file)
   - [envs](#envs)
 - [Commands](#commands)
-  - [Load from config](#load-from-config)
+  - [Load env](#load-env)
   - [Load from remote](#load-remote-file)
 
 ## Usage
@@ -22,7 +22,7 @@ A command line tool to Get your env files from the cloud as json.
 You can use this via `npx` or install it globally.
 
 ```bash
-npx jsonbank-env <args>
+npx jsonbank-env <remote> <filename>
 ```
 
 ## Configuration
@@ -51,7 +51,7 @@ The following file will be created.
 {
   public_key: "",
   envs: {
-    ".env": "project/file.json",
+    "dev": "project/file.json",
   },
 }
 ```
@@ -60,16 +60,11 @@ Insert your [public key](https://jsonbank.io/settings/api) in the `public_key` f
 
 ### envs
 
-The `envs` config is where you define the paths to `ENV` file and the `JSON` file in the cloud.
+The `envs` config is where you define the jsonbank remote url of your json files.
 
-- `key` is the relative path to the local env file
-- `value` is the relative path to the remote json file
-
-Given that:
-
+Given that
 - **Project Name** on jsonbank is `envs`
 - **File Path** is `file.json`
-- we want it to be saved as `.env` in the project
 
 your config will look like this:
 
@@ -77,7 +72,7 @@ your config will look like this:
 {
   "public_key": "public_key",
   "envs": {
-    ".env": "envs/file.json"
+    "dev": "envs/file.json"
   }
 }
 ```
@@ -90,36 +85,25 @@ Using the example config file below:
 {
   "public_key": "public_key",
   "envs": {
-    ".env": "envs/default.json",
-    ".prod.env": "envs/prod.json"
+    "dev": "envs/default.json",
+    "prod": "envs/prod.json"
   }
 }
 ```
 
-### Load from config
-
-```bash
-# Load envs from config file
-npx jsonbank-env
-
-# Load envs from config file and force overwrite
-npx jsonbank-env force
-```
-
-if you want to load a `registered` env file to a custom local file, you can do it like this:
+### Load env
 
 ```bash
 # Load env to custom local file
-npx jsonbank-env <env_key> <local_path>
+npx jsonbank-env <env> <local_path>
 
 # Load env to custom local file and force overwrite
-npx jsonbank-env <env_key> <local_path> force
+npx jsonbank-env <env> <local_path> force
 
 
 # Using the example config above
 # The command below will load remote "envs/prod.json" to ".env"
-npx jsonbank-env .prod.env .env
-
+npx jsonbank-env prod .env
 ```
 
 ### Load Remote file

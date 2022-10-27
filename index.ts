@@ -88,6 +88,13 @@ if (!config.public_key) {
 
 if (!config.envs) config.envs = {};
 
+/**
+ * Initialize JsonBank
+ */
+const jsb = new JsonBank({
+  keys: { pub: config.public_key },
+});
+
 // Make Main Function
 // To enable async await
 async function Main() {
@@ -107,22 +114,19 @@ async function Main() {
   }
 
   // if no command is passed
-  // then process all envs
-  for (const localPath in config.envs) {
-    const remotePath = config.envs[localPath];
-    await ProcessEnvs(remotePath, localPath, command === "force");
+  // list available commands
+  const availableCommands = Object.keys(config.envs);
+  if (availableCommands.length > 0) {
+    console.log("Available Commands:");
+    for (const command of availableCommands) {
+      console.log(`npx jsonbank-env ${command} <filename>`);
+    }
+  } else {
+    logThis("No commands available.", 1);
   }
 
   console.log(); // new line
-  process.exit(0);
 }
-
-/**
- * Initialize JsonBank
- */
-const jsb = new JsonBank({
-  keys: { pub: config.public_key },
-});
 
 // Run Main Function
 Main().catch((error) => {
