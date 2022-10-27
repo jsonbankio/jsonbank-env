@@ -5,7 +5,7 @@ import fs from "fs";
 import os from "os";
 import { JsonBank } from "jsonbank";
 
-const command: "init" | "force" | string | undefined = process.argv[2] as any;
+const command: "init" | string | undefined = process.argv[2] as any;
 const subCommand: "force" | string | undefined = process.argv[3] as any;
 
 // get current working directory
@@ -98,7 +98,7 @@ const jsb = new JsonBank({
 // Make Main Function
 // To enable async await
 async function Main() {
-  const hasCommand = command !== undefined && command !== "force";
+  const hasCommand = command !== undefined;
 
   // if command is passed
   // then subCommand must be passed
@@ -134,6 +134,13 @@ Main().catch((error) => {
   process.exit(1);
 });
 
+/**
+ * Process Envs
+ * @param remoteFile
+ * @param localFile
+ * @param force
+ * @constructor
+ */
 async function ProcessEnvs(
   remoteFile: string,
   localFile: string,
