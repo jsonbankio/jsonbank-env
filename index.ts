@@ -2,7 +2,7 @@
 
 import path from "path";
 import fs from "fs";
-import * as os from "os";
+import os from "os";
 import { JsonBank } from "jsonbank";
 
 const command: "init" | "force" | string | undefined = process.argv[2] as any;
