@@ -210,6 +210,7 @@ async function ProcessEnvs(
  */
 function jsonToEnv(data: ENV_OBJECT) {
   let env = "";
+
   for (const key in data) {
     const value = data[key];
     const type = typeof value;

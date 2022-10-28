@@ -3,13 +3,17 @@
 [Npm](https://www.npmjs.com/package/jsonbank-env) | [Github](https://https://github.com/jsonbankio/jsonbank-env.git)
 
 ## What is it?
+
 A command line tool to Get your env files from the cloud as json.
 
 **Save** as a `JSON` file remotely and **Load** it to your project as `ENV`.
 
 ## Menu
 
-- [Usage](#usage)
+- [Usage](#installation)
+- [Json Syntax](#json-syntax)
+  - [Object](#object)
+  - [Array of objects](#array-of-objects)
 - [Configuration](#configuration)
   - [Create config file](#create-config-file)
   - [envs](#envs)
@@ -17,12 +21,79 @@ A command line tool to Get your env files from the cloud as json.
   - [Load env](#load-env)
   - [Load from remote](#load-remote-file)
 
-## Usage
+## Installation
 
 You can use this via `npx` or install it globally.
 
 ```bash
-npx jsonbank-env <remote> <filename>
+npm i jsonbank-env
+# or
+npx jsonbank-env
+```
+
+## Json Syntax
+
+The json file must be an `object` or an `array` of objects.
+
+## Object
+
+The object syntax `env` file is generated without empty lines.
+
+```json
+{
+  "NODE_ENV": "development",
+  "PORT": 3000,
+  "SSL": null,
+  "DB_HOST": "localhost",
+  "DB_USER": "root",
+  "DB_PASS": "root",
+  "DB_NAME": "test"
+}
+```
+
+Will generate the following `env` file:
+
+```env
+NODE_ENV="development"
+PORT=3000
+SSL=
+DB_HOST="localhost"
+DB_USER="root"
+DB_PASS="root"
+DB_NAME="test"
+```
+
+## Array of objects
+
+The array of objects syntax `env` file is generated with empty lines between each object.
+
+```json
+[
+  {
+    "NODE_ENV": "development",
+    "PORT": 3000,
+    "SSL": null
+  },
+  {
+    "DB_HOST": "localhost",
+    "DB_USER": "root",
+    "DB_PASS": "root",
+    "DB_NAME": "test"
+  }
+]
+```
+
+Will generate the following `env` file:
+
+```env
+NODE_ENV="development"
+PORT=3000
+SSL=
+
+DB_HOST="localhost"
+DB_USER="root"
+DB_PASS="root"
+DB_NAME="test"
 ```
 
 ## Configuration
@@ -51,7 +122,7 @@ The following file will be created.
 {
   public_key: "",
   envs: {
-    "dev": "project/file.json",
+    dev: "project/file.json",
   },
 }
 ```
@@ -60,9 +131,8 @@ Insert your [public key](https://jsonbank.io/settings/api) in the `public_key` f
 
 ### envs
 
-The `envs` config is where you define the jsonbank remote url of your json files.
+The `envs` config is where you define the jsonbank remote url of your json files. Given that
 
-Given that
 - **Project Name** on jsonbank is `envs`
 - **File Path** is `file.json`
 
