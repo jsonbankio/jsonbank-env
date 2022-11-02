@@ -3,7 +3,7 @@
   "bin": {
     "jsonbank-env": "./index.js"
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Covert Json from cloud  to .env files",
   "main": "index.js",
   "author": "jsonbankio",
