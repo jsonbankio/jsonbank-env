@@ -74,6 +74,7 @@ The array of objects syntax `env` file is generated with empty lines between eac
     "PORT": 3000,
     "SSL": null
   },
+  "Comment: Database Configuration",
   {
     "DB_HOST": "localhost",
     "DB_USER": "root",
@@ -90,6 +91,7 @@ NODE_ENV="development"
 PORT=3000
 SSL=
 
+# Comment: Database Configuration
 DB_HOST="localhost"
 DB_USER="root"
 DB_PASS="root"

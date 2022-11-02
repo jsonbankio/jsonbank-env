@@ -6,6 +6,7 @@ import os from "os";
 import { JsonBank } from "jsonbank";
 
 type ENV_OBJECT = Record<string, string | number | boolean | null>;
+type ENV_OBJECT_ARRAY = (ENV_OBJECT | string)[];
 
 const command: "init" | string | undefined = process.argv[2] as any;
 const subCommand: "force" | string | undefined = process.argv[3] as any;
@@ -240,13 +241,19 @@ function jsonToEnv(data: ENV_OBJECT) {
  * Converts json array to env format
  * @param data
  */
-function jsonArrayToEnv(data: ENV_OBJECT[]) {
+function jsonArrayToEnv(data: ENV_OBJECT_ARRAY) {
   let env = "";
 
   for (const item of data) {
-    env += jsonToEnv(item);
-    // add new line between each object
-    env += os.EOL;
+    // if string then it is a comment
+    // else if object then convert to env
+    if (typeof item === "string") {
+      env += `# ${item}${os.EOL}`;
+    } else if (typeof item === "object") {
+      env += jsonToEnv(item);
+      // add new line between each object
+      env += os.EOL;
+    }
   }
 
   return env;
