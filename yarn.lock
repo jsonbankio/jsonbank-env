@@ -58,10 +58,15 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.186.tgz#862e5514dd7bd66ada6c70ee5fce844b06c8ee97"
   integrity sha512-eHcVlLXP0c2FlMPm56ITode2AgLMSa6aJ05JTTbYbI+7EMkCEE5qk2E41d5g2lCVTqRe0GnnRFurmlCsDODrPw==
 
-"@types/node@*", "@types/node@^18.11.6":
+"@types/node@*":
   version "18.11.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.6.tgz#4f91b0b30d405fdf76e0029b11ef5df6a0da4261"
   integrity sha512-j3CEDa2vd96K0AXF8Wur7UucACvnjkk8hYyQAHhUNciabZLDl9nfAEVUSwmh245OOZV15bRA3Y590Gi5jUcDJg==
+
+"@types/node@^18.11.9":
+  version "18.11.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
+  integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
 
 "@types/yargs-parser@*":
   version "21.0.0"
@@ -381,10 +386,10 @@ jest-get-type@^26.3.0:
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-26.3.0.tgz#e97dc3c3f53c2b406ca7afaed4493b1d099199e0"
   integrity sha512-TpfaviN1R2pQWkIihlfEanwOXK0zcxrKEE4MlU6Tn7keoXdN6/3gK/xl0yEh8DOunn5pOVGKf8hB4R9gVh04ig==
 
-jsonbank@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/jsonbank/-/jsonbank-1.3.0.tgz#9ccc09426bca0e8b41334e6b8ef9f9cd0e99eb12"
-  integrity sha512-Rv6mCDMDB1i1dyOCNNdTZHgHxx7xj5jJ/6LgOto6ru4YywhBCDh+pCh3+eA6shAJcctjBx5tnNynATP1MA3VFQ==
+jsonbank@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/jsonbank/-/jsonbank-1.4.0.tgz#6b84c493436eaad12f1b49f9e6a7efa5d86fc1cb"
+  integrity sha512-ovR4Zx52iY2KB8Pr7CGFO852Z8VdpX2XRQIGyN0CkHT545t2V9xRk4OD9Cb4AoGXfzum/jcY57oMoRLjYfilvg==
   dependencies:
     axios "0.27.2"
     japa "^4.0.0"
