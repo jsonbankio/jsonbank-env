@@ -27,5 +27,14 @@
     "@types/node": "^18.11.9",
     "dotenv": "^16.0.3",
     "jsonbank": "^1.4.0"
-  }
+  },
+  "keywords": [
+    "jsonbank",
+    "env",
+    "json",
+    "jsonbank-env",
+    "json2env",
+    "env2json",
+    "cloud"
+  ]
 }
