@@ -197,9 +197,12 @@ How to convert a env file to a json file?
 We got you covered. You don't need any initialization or configuration. Just run the following command and you are good to go.
 
 ```bash
-# convert json to env (.env is the default input file)
-npx jsonbank-env json  <env_path>
+# convert json to env and log to console (.env is the default input file)
+npx jsonbank-env json
 
-# convert json to env (custom input file)
-npx jsonbank-env json  <env_path> <input_file>
+# convert json to env and log to console (custom input file)
+npx jsonbank-env json <env_path>
+
+# convert json to env and save to file (custom input file)
+npx jsonbank-env json <env_path> <json_path>
 ```
