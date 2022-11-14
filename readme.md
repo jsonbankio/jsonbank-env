@@ -190,3 +190,16 @@ npx jsonbank-env <remote_path> <local_path> force
 # The command below will load remote "envs/prod.json" to ".env"
 npx jsonbank-env envs/prod.json .env
 ```
+
+
+### Env to Json
+How to convert a env file to a json file?
+We got you covered. You don't need any initialization or configuration. Just run the following command and you are good to go.
+
+```bash
+# convert json to env (.env is the default input file)
+npx jsonbank-env json  <env_path>
+
+# convert json to env (custom input file)
+npx jsonbank-env json  <env_path> <input_file>
+```

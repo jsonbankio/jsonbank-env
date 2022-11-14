@@ -1,7 +1,8 @@
 {
   "name": "jsonbank-env",
   "bin": {
-    "jsonbank-env": "./index.js"
+    "jsonbank-env": "./index.js",
+    "envtojson": "./env-to-json.js"
   },
   "version": "0.2.3",
   "description": "Covert Json from cloud  to .env files",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@types/node": "^18.11.9",
+    "dotenv": "^16.0.3",
     "jsonbank": "^1.4.0"
   }
 }

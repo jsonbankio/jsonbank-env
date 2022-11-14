@@ -4,27 +4,27 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { JsonBank } from "jsonbank";
+import { logThis } from "./functions";
 
 type ENV_OBJECT = Record<string, string | number | boolean | null>;
 type ENV_OBJECT_ARRAY = (ENV_OBJECT | string)[];
 
-const command: "init" | string | undefined = process.argv[2] as any;
+const command: "init" | "json" | string | undefined = process.argv[2] as any;
 const subCommand: "force" | string | undefined = process.argv[3] as any;
+
+if (command === "json") {
+  // remove "json" from args
+  process.argv.splice(2, 1);
+  // run env-to-json
+  require("./env-to-json");
+  process.exit(0);
+}
 
 // get current working directory
 const cwd = process.cwd();
 // get config file path
 const configPath = path.join(cwd, "jsonbank.env.json");
 console.log(); // new line
-
-// simple logger
-function logThis(message: string, exit?: number) {
-  console.log(message);
-  if (exit !== undefined) {
-    console.log(); // new line
-    process.exit(exit);
-  }
-}
 
 // if init command is passed
 // make config file in current working directory
