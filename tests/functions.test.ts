@@ -95,6 +95,28 @@ describe("jsonToEnv", () => {
     assert.equal(jsonToEnv({}), "");
   });
 
+  it("wraps '!' prefixed keys in single quotes and strips the marker", () => {
+    assert.equal(
+      jsonToEnv({ "!SECRET_KEY": "a $peci@l k3y" }),
+      `SECRET_KEY='a $peci@l k3y'${EOL}`
+    );
+  });
+
+  it("single quotes non-string values of '!' prefixed keys", () => {
+    assert.equal(
+      jsonToEnv({ "!PORT": 3000, "!DEBUG": true }),
+      `PORT='3000'${EOL}DEBUG='true'${EOL}`
+    );
+  });
+
+  it("writes null values of '!' prefixed keys as empty", () => {
+    assert.equal(jsonToEnv({ "!SSL": null }), `SSL=${EOL}`);
+  });
+
+  it("skips nested objects even with the '!' marker", () => {
+    assert.equal(jsonToEnv({ "!NESTED": { a: 1 } } as any), "");
+  });
+
   it("converts the readme example correctly", () => {
     const env = jsonToEnv({
       NODE_ENV: "development",
@@ -214,6 +236,38 @@ describe("envToJson", () => {
     assert.deepEqual(json, { A: "1", B: "2" });
   });
 
+  it("prefixes keys of single quoted values with '!'", () => {
+    const json = envToJson(
+      [`SECRET_KEY='a $peci@l k3y'`, `NORMAL="plain"`, `RAW=1`].join(EOL)
+    );
+
+    assert.deepEqual(json, {
+      "!SECRET_KEY": "a $peci@l k3y",
+      NORMAL: "plain",
+      RAW: "1",
+    });
+  });
+
+  it("prefixes single quoted keys inside groups with '!'", () => {
+    const json = envToJson(
+      [`A='1'`, `B=2`, ``, `C='3'`].join(EOL)
+    );
+
+    assert.deepEqual(json, [{ "!A": "1", B: "2" }, { "!C": "3" }]);
+  });
+
+  it("supports 'export' prefixed single quoted values", () => {
+    const json = envToJson(`export SECRET='sh'`);
+
+    assert.deepEqual(json, { "!SECRET": "sh" });
+  });
+
+  it("does not mark an empty single quoted pair of quotes as double quoted", () => {
+    const json = envToJson(`EMPTY=''`);
+
+    assert.deepEqual(json, { "!EMPTY": "" });
+  });
+
   it("treats consecutive blank lines as one group separator", () => {
     const json = envToJson(
       [`A=1`, ``, ``, `B=2`].join(EOL)
@@ -265,5 +319,23 @@ describe("round trip", () => {
     ]).trim();
 
     assert.deepEqual(envToJson(env), [{ A: "1", B: "2" }, { C: "3" }]);
+  });
+
+  it("json -> env -> json keeps '!' single quote markers", () => {
+    const source = { "!SECRET_KEY": "a $peci@l k3y", NORMAL: "plain" };
+    const env = jsonToEnv(source);
+
+    assert.equal(
+      env,
+      `SECRET_KEY='a $peci@l k3y'${EOL}NORMAL="plain"${EOL}`
+    );
+    assert.deepEqual(envToJson(env), source);
+  });
+
+  it("env -> json -> env keeps single quoted values single quoted", () => {
+    const env = `SECRET_KEY='a $peci@l k3y'${EOL}NORMAL="plain"`;
+    const json = envToJson(env) as Record<string, string>;
+
+    assert.equal(jsonToEnv(json).trim(), env);
   });
 });

@@ -15,29 +15,40 @@ export function logThis(message: string, exit?: number) {
 
 /**
  * Converts json to env format
+ * Keys prefixed with "!" are written with single quoted values.
+ * e.g. {"!SECRET": "a $ecret"} => SECRET='a $ecret'
  * @param data
  */
 export function jsonToEnv(data: ENV_OBJECT) {
   let env = "";
 
-  for (const key in data) {
+  for (let key in data) {
     const value = data[key];
     const type = typeof value;
 
-    // wrap all string values with double quotes
-    if (type === "string") {
-      env += `${key}="${value}"${os.EOL}`;
-    }
-    // else if undefined or null then set value to empty string
-    else if (value === undefined || value === null) {
+    // "!" prefixed keys are single quoted
+    const singleQuoted = key.startsWith("!");
+    // remove "!" from key
+    if (singleQuoted) key = key.slice(1);
+
+    // if undefined or null then set value to empty string
+    if (value === undefined || value === null) {
       env += `${key}=${os.EOL}`;
     }
-    // set value as it is except for type object
+    // if object then skip
+    else if (type === "object") {
+      continue;
+    }
+    // if single quoted then wrap value with single quotes
+    else if (singleQuoted) {
+      env += `${key}='${value}'${os.EOL}`;
+    }
+    // wrap all string values with double quotes
+    else if (type === "string") {
+      env += `${key}="${value}"${os.EOL}`;
+    }
+    // else set value as it is
     else {
-      // if object then skip
-      if (type === "object") continue;
-
-      // else set value as it is
       env += `${key}=${value}${os.EOL}`;
     }
   }
@@ -72,6 +83,8 @@ export function jsonArrayToEnv(data: ENV_OBJECT_ARRAY) {
  * Blank lines are treated as group separators:
  * if any group separator is found, an array of objects is returned,
  * else a single object is returned.
+ * Single quoted values are exported with a "!" prefixed key.
+ * e.g. SECRET='a $ecret' => {"!SECRET": "a $ecret"}
  * @param env
  */
 export function envToJson(
@@ -80,11 +93,16 @@ export function envToJson(
   // loop through each line
   const lines = env.split(os.EOL);
   const endGroupKeys = [] as string[];
+  const singleQuotedKeys = new Set<string>();
 
   for (const line in lines) {
     const lineStr = (lines[line] || "").trim();
     // if line begins with #, continue
     if (lineStr.startsWith("#")) continue;
+
+    // if value is single quoted, keep track of the key
+    const singleQuoted = lineStr.match(/^(?:export\s+)?([^=\s]+)\s*=\s*'.*'$/);
+    if (singleQuoted) singleQuotedKeys.add(singleQuoted[1]);
 
     // if line is empty and not last line, then get the previous line env key
     if (lineStr === "" && Number(line) !== lines.length - 1) {
@@ -97,6 +115,10 @@ export function envToJson(
     }
   }
 
+  // prefix single quoted keys with "!"
+  const jsonKey = (key: string) =>
+    singleQuotedKeys.has(key) ? `!${key}` : key;
+
   // parse env file
   const parsedEnv = dotenv.parse(env);
   let newEnv: Array<Record<string, string>> | Record<string, string>;
@@ -106,11 +128,11 @@ export function envToJson(
     for (const key in parsedEnv) {
       const value = parsedEnv[key];
       if (endGroupKeys.includes(key)) {
-        group[key] = value;
+        group[jsonKey(key)] = value;
         newEnv.push(group);
         group = {};
       } else {
-        group[key] = value;
+        group[jsonKey(key)] = value;
       }
     }
 
@@ -119,7 +141,10 @@ export function envToJson(
       newEnv.push(group);
     }
   } else {
-    newEnv = parsedEnv;
+    newEnv = {};
+    for (const key in parsedEnv) {
+      newEnv[jsonKey(key)] = parsedEnv[key];
+    }
   }
 
   return newEnv;

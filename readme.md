@@ -14,6 +14,7 @@ A command line tool to Get your env files from the cloud as json.
 - [Json Syntax](#json-syntax)
   - [Object](#object)
   - [Array of objects](#array-of-objects)
+  - [Single quoted values](#single-quoted-values)
 - [Configuration](#configuration)
   - [Create config file](#create-config-file)
   - [envs](#envs)
@@ -97,6 +98,28 @@ DB_USER="root"
 DB_PASS="root"
 DB_NAME="test"
 ```
+
+## Single quoted values
+
+By default, string values are wrapped in **double quotes**. Some env parsers (e.g. rust's `dotenvy`) expect values that contain special characters to be **single quoted** instead.
+
+To mark a value as single quoted, prefix its key with `!` in the json file:
+
+```json
+{
+  "!SECRET_KEY": "a $peci@l k3y",
+  "NORMAL": "plain"
+}
+```
+
+Will generate the following `env` file:
+
+```env
+SECRET_KEY='a $peci@l k3y'
+NORMAL="plain"
+```
+
+This also works in reverse: when converting an env file to json, single quoted values are exported with the `!` prefix on their keys, so the quoting style survives a round trip.
 
 ## Configuration
 
