@@ -13,7 +13,7 @@
     "prepublishOnly": "npm run build",
     "build": "npx tsc",
     "watch": "npx tsc --watch",
-    "test": "node index.js",
+    "test": "tsx --test tests/*.test.ts",
     "test-dev": "nodemon index.js -- '.env' '.env' force"
   },
   "license": "MIT",
