@@ -219,6 +219,8 @@ npx jsonbank-env envs/prod.json .env
 How to convert a env file to a json file?
 We got you covered. You don't need any initialization or configuration. Just run the following command and you are good to go.
 
+Note: comments in the env file are kept as strings in the [array of objects](#array-of-objects) format, so they survive a round trip. An env file without comments and blank lines is converted to a single [object](#object).
+
 ```bash
 # convert json to env and log to console (.env is the default input file)
 npx jsonbank-env json

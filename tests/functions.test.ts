@@ -200,12 +200,28 @@ describe("envToJson", () => {
     assert.deepEqual(envToJson(`SSL=`), { SSL: "" });
   });
 
-  it("ignores comment lines", () => {
+  it("keeps comment lines as strings and forces array format", () => {
     const json = envToJson(
       [`# a comment`, `A=1`].join(EOL)
     );
 
-    assert.deepEqual(json, { A: "1" });
+    assert.deepEqual(json, ["a comment", { A: "1" }]);
+  });
+
+  it("splits a group at an inline comment", () => {
+    const json = envToJson(
+      [`A=1`, `# between`, `B=2`].join(EOL)
+    );
+
+    assert.deepEqual(json, [{ A: "1" }, "between", { B: "2" }]);
+  });
+
+  it("keeps '#' prefixed lines without spaces as comments", () => {
+    const json = envToJson(
+      [`#Hello="this will be commented"`, `A=1`].join(EOL)
+    );
+
+    assert.deepEqual(json, [`Hello="this will be commented"`, { A: "1" }]);
   });
 
   it("splits groups on blank lines into an array of objects", () => {
@@ -222,12 +238,12 @@ describe("envToJson", () => {
     assert.deepEqual(json, { A: "1", B: "2" });
   });
 
-  it("ignores a blank line after a comment", () => {
+  it("keeps a header comment followed by a blank line as a string", () => {
     const json = envToJson(
       [`# header`, ``, `A=1`, `B=2`].join(EOL)
     );
 
-    assert.deepEqual(json, { A: "1", B: "2" });
+    assert.deepEqual(json, ["header", { A: "1", B: "2" }]);
   });
 
   it("ignores a leading blank line", () => {
@@ -293,6 +309,7 @@ describe("envToJson", () => {
 
     assert.deepEqual(json, [
       { NODE_ENV: "development", PORT: "3000", SSL: "" },
+      "Comment: Database Configuration",
       {
         DB_HOST: "localhost",
         DB_USER: "root",
@@ -311,14 +328,11 @@ describe("round trip", () => {
     assert.deepEqual(envToJson(env), source);
   });
 
-  it("json array -> env -> json keeps the groups (comments are dropped)", () => {
-    const env = jsonArrayToEnv([
-      { A: "1", B: "2" },
-      "Group two",
-      { C: "3" },
-    ]).trim();
+  it("json array -> env -> json keeps the groups and comments", () => {
+    const source = [{ A: "1", B: "2" }, "Group two", { C: "3" }];
+    const env = jsonArrayToEnv(source).trim();
 
-    assert.deepEqual(envToJson(env), [{ A: "1", B: "2" }, { C: "3" }]);
+    assert.deepEqual(envToJson(env), source);
   });
 
   it("json -> env -> json keeps '!' single quote markers", () => {

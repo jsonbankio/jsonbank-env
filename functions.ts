@@ -80,72 +80,68 @@ export function jsonArrayToEnv(data: ENV_OBJECT_ARRAY) {
 
 /**
  * Converts env file content to json.
- * Blank lines are treated as group separators:
- * if any group separator is found, an array of objects is returned,
- * else a single object is returned.
+ * Blank lines are treated as group separators and
+ * comment lines are kept as strings.
+ * If the env has no comments and only one group,
+ * a single object is returned, else an array is returned.
  * Single quoted values are exported with a "!" prefixed key.
  * e.g. SECRET='a $ecret' => {"!SECRET": "a $ecret"}
  * @param env
  */
 export function envToJson(
   env: string
-): Record<string, string> | Array<Record<string, string>> {
-  // loop through each line
-  const lines = env.split(os.EOL);
-  const endGroupKeys = [] as string[];
-  const singleQuotedKeys = new Set<string>();
-
-  for (const line in lines) {
-    const lineStr = (lines[line] || "").trim();
-    // if line begins with #, continue
-    if (lineStr.startsWith("#")) continue;
-
-    // if value is single quoted, keep track of the key
-    const singleQuoted = lineStr.match(/^(?:export\s+)?([^=\s]+)\s*=\s*'.*'$/);
-    if (singleQuoted) singleQuotedKeys.add(singleQuoted[1]);
-
-    // if line is empty and not last line, then get the previous line env key
-    if (lineStr === "" && Number(line) !== lines.length - 1) {
-      const prevLine = lines[Number(line) - 1] || "";
-      const prevLineKey = prevLine.split("=")[0];
-      // a blank or comment previous line has no key to end a group with
-      if (prevLineKey && !prevLineKey.trim().startsWith("#")) {
-        endGroupKeys.push(prevLineKey);
-      }
-    }
-  }
-
-  // prefix single quoted keys with "!"
-  const jsonKey = (key: string) =>
-    singleQuotedKeys.has(key) ? `!${key}` : key;
-
-  // parse env file
+): Record<string, string> | Array<Record<string, string> | string> {
+  // parse env file for values
   const parsedEnv = dotenv.parse(env);
-  let newEnv: Array<Record<string, string>> | Record<string, string>;
-  if (endGroupKeys.length > 0) {
-    newEnv = [];
-    let group: Record<string, string> = {};
-    for (const key in parsedEnv) {
-      const value = parsedEnv[key];
-      if (endGroupKeys.includes(key)) {
-        group[jsonKey(key)] = value;
-        newEnv.push(group);
-        group = {};
-      } else {
-        group[jsonKey(key)] = value;
-      }
+
+  const items: Array<Record<string, string> | string> = [];
+  let group: Record<string, string> = {};
+
+  // push current group to items if not empty
+  const endGroup = () => {
+    if (Object.keys(group).length > 0) {
+      items.push(group);
+      group = {};
+    }
+  };
+
+  for (const line of env.split(os.EOL)) {
+    const lineStr = line.trim();
+
+    // blank lines end the current group
+    if (lineStr === "") {
+      endGroup();
+      continue;
     }
 
-    // if last group is not empty
-    if (Object.keys(group).length > 0) {
-      newEnv.push(group);
+    // comment lines end the current group and are kept as strings
+    if (lineStr.startsWith("#")) {
+      endGroup();
+      items.push(lineStr.replace(/^#\s?/, ""));
+      continue;
     }
-  } else {
-    newEnv = {};
-    for (const key in parsedEnv) {
-      newEnv[jsonKey(key)] = parsedEnv[key];
-    }
+
+    // env lines e.g KEY=value or export KEY=value
+    const match = lineStr.match(/^(?:export\s+)?([^=\s]+)\s*=(.*)$/);
+    if (!match) continue;
+
+    const key = match[1];
+    if (!Object.prototype.hasOwnProperty.call(parsedEnv, key)) continue;
+
+    // single quoted values are exported with a "!" prefixed key
+    const singleQuoted = /^\s*'.*'\s*$/.test(match[2]);
+    group[singleQuoted ? `!${key}` : key] = parsedEnv[key];
   }
 
-  return newEnv;
+  endGroup();
+
+  // if only one object and no comments, return it as a single object
+  if (items.length === 1 && typeof items[0] === "object") {
+    return items[0];
+  }
+
+  // if env is empty, return an empty object
+  if (items.length === 0) return {};
+
+  return items;
 }
