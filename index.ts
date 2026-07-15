@@ -4,10 +4,12 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { JsonBank } from "jsonbank";
-import { logThis } from "./functions";
-
-type ENV_OBJECT = Record<string, string | number | boolean | null>;
-type ENV_OBJECT_ARRAY = (ENV_OBJECT | string)[];
+import {
+  ENV_OBJECT,
+  jsonArrayToEnv,
+  jsonToEnv,
+  logThis,
+} from "./functions";
 
 const command: "init" | "json" | string | undefined = process.argv[2] as any;
 const subCommand: "force" | string | undefined = process.argv[3] as any;
@@ -203,58 +205,4 @@ async function ProcessEnvs(
 
   // log success
   console.log("===== Completed =====");
-}
-
-/**
- * Converts json to env format
- * @param data
- */
-function jsonToEnv(data: ENV_OBJECT) {
-  let env = "";
-
-  for (const key in data) {
-    const value = data[key];
-    const type = typeof value;
-
-    // wrap all string values with double quotes
-    if (type === "string") {
-      env += `${key}="${value}"${os.EOL}`;
-    }
-    // else if undefined or null then set value to empty string
-    else if (value === undefined || value === null) {
-      env += `${key}=${os.EOL}`;
-    }
-    // set value as it is except for type object
-    else {
-      // if object then skip
-      if (type === "object") continue;
-
-      // else set value as it is
-      env += `${key}=${value}${os.EOL}`;
-    }
-  }
-
-  return env;
-}
-
-/**
- * Converts json array to env format
- * @param data
- */
-function jsonArrayToEnv(data: ENV_OBJECT_ARRAY) {
-  let env = "";
-
-  for (const item of data) {
-    // if string then it is a comment
-    // else if object then convert to env
-    if (typeof item === "string") {
-      env += `# ${item}${os.EOL}`;
-    } else if (typeof item === "object") {
-      env += jsonToEnv(item);
-      // add new line between each object
-      env += os.EOL;
-    }
-  }
-
-  return env;
 }

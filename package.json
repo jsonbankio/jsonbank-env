@@ -13,7 +13,7 @@
     "prepublishOnly": "npm run build",
     "build": "npx tsc",
     "watch": "npx tsc --watch",
-    "test": "node index.js",
+    "test": "tsx --test tests/*.test.ts",
     "test-dev": "nodemon index.js -- '.env' '.env' force"
   },
   "license": "MIT",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "nodemon": "^3.1.14",
     "prettier": "^3.9.5",
+    "tsx": "^4.23.1",
     "typescript": "^7.0.2"
   },
   "dependencies": {
