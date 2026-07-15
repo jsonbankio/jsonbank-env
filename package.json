@@ -10,23 +10,24 @@
   "author": "jsonbankio",
   "repository": "https://github.com/jsonbankio/jsonbank-env",
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run test && npm run build",
     "build": "npx tsc",
     "watch": "npx tsc --watch",
-    "test": "node index.js",
+    "test": "tsx --test tests/*.test.ts",
     "test-dev": "nodemon index.js -- '.env' '.env' force"
   },
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "nodemon": "^2.0.20",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.4"
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.5",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@types/node": "^18.11.9",
-    "dotenv": "^16.0.3",
-    "jsonbank": "^1.4.0"
+    "@types/node": "^26.1.1",
+    "dotenv": "^17.4.2",
+    "jsonbank": "^1.5.4"
   },
   "keywords": [
     "jsonbank",

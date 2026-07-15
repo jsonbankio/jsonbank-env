@@ -9,3 +9,6 @@ jsonbank.env.json
 
 # ignore the .ts files
 *.ts
+
+# ignore tests
+tests
